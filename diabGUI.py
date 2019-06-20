@@ -3,44 +3,37 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LogisticRegression
 from tkinter import *
 
 db = pd.read_csv("C://Users//summerintern.yash//Desktop//Diabetes-EDA//diabetes.csv")
 
-x_train, x_test, y_train, y_test = train_test_split(db.loc[:,db.columns != 'Outcome'], db['Outcome'],
-                                                   stratify = db['Outcome'], random_state=66)
+y = db.Outcome
+x = db.drop('Outcome', axis = 1)
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.2)
 
-sv = SVC()
-sv.fit(x_train, y_train)
-
-print("Accuracy on training set: {:.3f}".format(sv.score(x_train, y_train)))
-print("Accuracy on test set: {:.3f}".format(sv.score(x_test, y_test)))
-#Here the SVM model overfits
-#This happens as all the features are not scaled
-#To overcome this, the data should be rescaled so that all the features are on the same scale
-
-scaler = MinMaxScaler()
-x_train_scaled = scaler.fit_transform(x_train)
-x_test_scaled = scaler.fit_transform(x_test)
-
-svs = SVC(C=1000)
-svs.fit(x_train_scaled, y_train)
-
-print("Accuracy on training set: {:.3f}".format(svs.score(x_train_scaled, y_train)))
-print("Accuracy on test set: {:.3f}".format(svs.score(x_test_scaled, y_test)))
+lr = LogisticRegression(C = 1).fit(x_train, y_train)
+print('Accuracy on training set: {:.3f}'.format(lr.score(x_train, y_train)))
+print('Accuracy on test set: {:.3f}'.format(lr.score(x_test, y_test)))
 
 def predi():
     p = e1.get()
+    p = int(p)
     g = e2.get()
+    g = int(g)
     bp = e3.get()
+    bp = int(bp)
     s = e4.get()
+    s = int(s)
     i = e5.get()
+    i = int(i)
     b = e6.get()
+    b = float(b)
     d = e7.get()
+    d = float(d)
     a = e8.get()
-    P = svs.predict([[p,g,bp,s,i,b,d,a]])
+    a = int(a)
+    P = lr.predict([[p,g,bp,s,i,b,d,a]])
     if(P[0] == 0):
         t.delete(1.0, 'end-1c')
         t.insert('end-1c','NOT DIABETIC')
